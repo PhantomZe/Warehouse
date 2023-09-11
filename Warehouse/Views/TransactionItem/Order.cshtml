@@ -1,0 +1,69 @@
+﻿@model OrderItem
+@inject IHttpContextAccessor httpContextAccessor
+<form method="post">
+    <br />
+    <input asp-for="ItemID" hidden />
+    <input asp-for="UserID" value="@httpContextAccessor.HttpContext.Session.GetString("ID")" hidden />
+    <input asp-for="ItemName" hidden />
+    <input asp-for="RemainingItemAmount" hidden />
+    <div class="container">
+        <div class="card">
+            <div class="card-header bg-dark text-light ml-0">
+                <div class="container row">
+                    <div class="col-12 d-none d-md-block col-md-6 pb-1 text-warning h3">
+                        Order
+                    </div>
+                    <div class="col-12 col-md-4 offset-md-2 text-right mt-2">
+                        <a asp-action="TransactionIndex" class="btn btn-warning form-control btn-sm">Back to Orders</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="container rounded p-2">
+                    <div class="row">
+                        <div class="col-12 col-lg-6 pb-4">
+                            <div class="row my-1">
+                                <div class="col-3">Item Name</div>
+                                <div class="col-9">
+                                    @Model.ItemName
+                                </div>
+                            </div>
+                            <div class="row my-1">
+                                <div class="col-3">Remaining Item</div>
+                                <div class="col-9">
+                                    @Model.RemainingItemAmount.ToString()
+                                </div>
+                            </div>
+                            <div class="row my-1">
+                                <div class="col-3">Recipient Name</div>
+                                <div class="col-9">
+                                    <input asp-for="RecipientName" class="form-control" />
+                                </div>
+                            </div>
+                           
+                            <div class="row my-1">
+                                <div class="col-3">Number of Items Purchased</div>
+                                <div class="col-9">
+                                    <input type="number" asp-for="ItemAmount" min="1" max="@Model.RemainingItemAmount" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="row my-1">
+                                <div class="col-3">Total Price of Items (RP.)</div>
+                                <div class="col-9">
+                                    <input type="number" asp-for="ItemPrice" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="row my-1">
+                                <div class="col-3"></div>
+                                <div class="col-5">
+                                    <input type="submit" value="Save" class="btn btn-success form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

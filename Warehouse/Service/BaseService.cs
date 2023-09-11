@@ -1,0 +1,78 @@
+﻿using System.Net.Http;
+using System.Text;
+using Warehouse.Models;
+using Newtonsoft.Json;
+using static Warehouse.Utility.SD;
+using Warehouse.Service.IService;
+using System.Net;
+
+namespace Warehouse.Service
+{
+    public class BaseService : IBaseService
+    {
+        private readonly IHttpClientFactory httpClientFactory;
+        public BaseService(IHttpClientFactory httpClientFactory)
+        {
+            this.httpClientFactory = httpClientFactory;
+        }
+        public async Task<ResponseDto?> SendAsync(RequestDto requestDto, bool withBearer = true)
+        {
+            try
+            {
+                HttpClient client = httpClientFactory.CreateClient("WarehouseAPI");
+                HttpRequestMessage message = new();
+                message.Headers.Add("Accept", "application/json");
+
+                message.RequestUri = new Uri(requestDto.Url);
+                if (requestDto.Data != null)
+                {
+                    message.Content = new StringContent(JsonConvert.SerializeObject(requestDto.Data), Encoding.UTF8, "application/json");
+                }
+                HttpResponseMessage? apiResponse = null;
+
+                switch (requestDto.ApiType)
+                {
+                    case ApiType.POST:
+                        message.Method = HttpMethod.Post;
+                        break;
+                    case ApiType.DELETE:
+                        message.Method = HttpMethod.Delete;
+                        break;
+                    case ApiType.PUT:
+                        message.Method = HttpMethod.Put;
+                        break;
+                    default:
+                        message.Method = HttpMethod.Get;
+                        break;
+                }
+                apiResponse = await client.SendAsync(message);
+
+                switch (apiResponse.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                        return new() { IsSuccess = false, ErrorMessage = "Not Found" };
+                    case HttpStatusCode.Forbidden:
+                        return new() { IsSuccess = false, ErrorMessage = "Access Denied" };
+                    case HttpStatusCode.Unauthorized:
+                        return new() { IsSuccess = false, ErrorMessage = "Unauthorized" };
+                    case HttpStatusCode.InternalServerError:
+                        return new() { IsSuccess = false, ErrorMessage = "Internal Server Error" };
+                    default:
+                        var apiContent = await apiResponse.Content.ReadAsStringAsync();
+                        var apiResponseDto = JsonConvert.DeserializeObject<ResponseDto>(apiContent);
+                        return apiResponseDto;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var dto = new ResponseDto
+                {
+                    ErrorMessage = ex.Message.ToString(),
+                    IsSuccess = false
+                };
+                return dto;
+            }
+        }
+    }
+}

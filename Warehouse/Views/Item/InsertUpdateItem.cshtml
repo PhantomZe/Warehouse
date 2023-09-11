@@ -1,0 +1,52 @@
+﻿@model ItemDto
+
+<form asp-action="InsertUpdateItem">
+    <br />
+    <div class="container border p-3">
+        <h1 class="text-center">@ViewBag.statusItem Item</h1>
+
+        <hr />
+        <div class="row">
+            <input asp-for="ItemID" hidden />
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;"> Item Name</label>
+            </div>
+            <div class="col-10 pb-3">
+                <input asp-for="ItemName" class="form-control" />
+                <span asp-validation-for="ItemName" class="text-danger"></span>
+            </div>
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;">Item Amount</label>
+            </div>
+            <div class="col-10 pb-3">
+                <input asp-for="ItemAmount" class="form-control" />
+                <span asp-validation-for="ItemAmount" class="text-danger"></span>
+            </div>
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;">Status</label>
+            </div>
+            <div class="col-10 pb-3">
+                <select asp-for="Status" class="form-select" asp-items="@ViewBag.statusList">
+                    <option disabled selected>--Select Status--</option>
+                </select>
+            </div>
+
+            <div class="col-5 offset-2">
+
+                <a asp-action="ItemIndex" class="btn-primary btn form-control ">Back to List</a>
+            </div>
+            <div class="col-5">
+                <input type="submit" value="Save" class="btn btn-success form-control" />
+
+            </div>
+
+        </div>
+
+        <div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
